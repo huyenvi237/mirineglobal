@@ -8,6 +8,6 @@
 3. Circle 
 4. Candlestick 
 5. Dataframe
-6. Heatmap
+6. Heatmap  
 ---> Comparative: barchart, circle
   
