@@ -1,0 +1,9 @@
+[2022-03-03 17:18:00,056] - [INFO] - Date time format is correct
+[2022-03-03 17:18:00,056] - [INFO] - Date time is 2021-10-01 00:00:00
+[2022-03-03 17:18:00,543] - [INFO] - Download Succeed!
+[2022-03-03 17:18:05,705] - [INFO] - No problem with parameter!
+[2022-03-03 17:18:40,693] - [INFO] - Date time format is correct
+[2022-03-03 17:18:40,693] - [INFO] - Date time is 2021-10-01 00:00:00
+[2022-03-03 17:18:41,139] - [INFO] - Download Succeed!
+[2022-03-03 17:18:46,454] - [INFO] - No problem with parameter!
+[2022-03-03 17:19:16,977] - [ERROR] - time data 'abc' does not match format '%Y-%m-%d'
