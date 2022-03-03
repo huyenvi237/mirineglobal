@@ -46,7 +46,7 @@ hoặc
 ## 6.*Tạo hình ảnh*  
 Cú pháp: `![mô tả](link)`  
 
-![VÍ DỤ](http://imgt.taimienphi.vn/cf/Images/tt/2018/8/1/list-icon-facebook-bua-che.jpg)  
+![VÍ DỤ](C:/User/mg-sa/Desktop/chart.png)  
 
 <a name="bang"></a>
 ##  7.*Bảng*
