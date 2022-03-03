@@ -60,7 +60,7 @@ if __name__ == "__main__":
         get_data(args[1], args[2])
         logger.info('No Problem!')
         print('Stock name is {d[1]},checked day is {d[2]}'.format(d=args))
-    except IndexError:
-        logger.warning('Dont put enough parameter for function!')
+    except IndexError as ie:
+        logger.error(ie)
 
 
