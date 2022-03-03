@@ -2,9 +2,8 @@ import sys          #Terminalでのコードを読むため
 from datetime import datetime
 import yfinance as yf       #Yahoo financeを使いために
 import plotly.graph_objects as go
-import pandas as pd
+import pandas as pd         #Data Analysisの対応
 import logging
-
 
 #データを取得
 
@@ -19,7 +18,7 @@ def get_data(stock_name,time):
         dt.to_csv('stock_data1.csv')         #データをCSVファイルに書き込む
         logger.info('Download Succeed!')
     except Exception:
-        logger.info('Can not download data!')
+        logger.info('Can not download data!Try again!')
 
     dr = pd.read_csv('stock_data1.csv')
     fig = go.Figure(data=[go.Candlestick(x=dr['Date'],
@@ -39,13 +38,29 @@ def get_data(stock_name,time):
     )
     fig.show()
 
+#入力したdatetime formatをチェック
+def check_date_input(time):
+    check_time=time
+    date_format= '%Y-%m-%d'
+    try:
+        change=datetime.strptime(check_time,date_format)
+        logger.info('Date time format is correct')
+        logger.info('Date time is {}'.format(change))
+
+    except ValueError as ve:
+        logger.error(ve)
+        exit(1)
+
+#Main
 if __name__ == "__main__":
 
+    #Logging Setting
     logger = logging.getLogger('Output_logging_file')
     file_logger = logging.FileHandler('ouput_logging_file.log')
     new_format = '[%(asctime)s] - [%(levelname)s] - %(message)s'
     file_logger_format = logging.Formatter(new_format)
 
+    #ファイルでもコンソールでもデータを入力するため Stream Handlerを使います
     file_logger.setFormatter(file_logger_format)
     logger.addHandler(file_logger)
     logger.setLevel(logging.INFO)
@@ -57,10 +72,12 @@ if __name__ == "__main__":
     try:
         args=sys.argv
         #print(type(args))----->argsのタイプを確認します
+        check_date_input(args[2])
         get_data(args[1], args[2])
-        logger.info('No Problem!')
-        print('Stock name is {d[1]},checked day is {d[2]}'.format(d=args))
+        logger.info('No problem with parameter!')
+        print('Stock name is {d[1]},checked from {d[2]}'.format(d=args))
     except IndexError as ie:
         logger.error(ie)
+
 
 
