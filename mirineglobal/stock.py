@@ -28,7 +28,7 @@ def get_data(stock_name,time):
 
     fig.update_layout(
         title='CandleStick Chart',
-        yaxis_title='SBI Stock',
+        yaxis_title='{} Stock'.format(stock_name),
         shapes=[dict(
             x0='2022-02-15', x1='2022-02-15', y0=0, y1=1, xref='x', yref='paper',
             line_width=2)],
