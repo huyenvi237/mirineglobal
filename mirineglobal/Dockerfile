@@ -18,3 +18,4 @@ WORKDIR /stock_app
 COPY requirements.txt /stock_app/
 COPY .. /stock_app/
 RUN pip install -r requirements.txt
+ENTRYPOINT ["python","stock.py","SBI","2022-01-01"]
