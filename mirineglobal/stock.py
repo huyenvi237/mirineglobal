@@ -15,6 +15,7 @@ def get_data(stock_name,time):
     #Yahoo Financeからデータを取得
     try:
         dt=yf.download(stock_name,start=time,end=end_date)
+        print(dt)
         dt.to_csv('stock_data1.csv')         #データをCSVファイルに書き込む
         logger.info('Download Succeed!')
     except Exception:
