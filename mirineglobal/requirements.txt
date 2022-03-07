@@ -1,0 +1,7 @@
+pandas==1.4.1
+requests==2.27.1
+ploty==5.1.0
+yfinance==0.1.70
+urllib3==1.26.8
+numpy==1.22.2
+lxml==4.8.0
