@@ -1,10 +1,10 @@
 version: "3"
 services:
-	python3:
-		restart: always
-		build: .
-		container_name: "python3"
-		working_dir: '/stock_app/'
-		tty: true
-		volumes:
-		 - ./output:/stock_app
+ python3:
+  restart: always
+  build: .
+  container_name: "python3"
+  working_dir: '/stock_app/'
+  tty: true
+  volumes:
+   - ./output:/stock_app
