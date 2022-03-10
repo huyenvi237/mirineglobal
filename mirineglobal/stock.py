@@ -8,6 +8,7 @@ import logging
 #データを取得
 
 def get_data(stock_name,time):
+
     # Datetimeを設定
 
     end_date = datetime.now()
@@ -15,13 +16,15 @@ def get_data(stock_name,time):
     #Yahoo Financeからデータを取得
     try:
         dt=yf.download(stock_name,start=time,end=end_date)
-        print(dt)
+        print(dt)       #check data
         dt.to_csv('stock_data1.csv')         #データをCSVファイルに書き込む
         logger.info('Download Succeed!')
     except Exception:
         logger.info('Can not download data!Try again!')
 
     dr = pd.read_csv('stock_data1.csv')
+
+
     fig = go.Figure(data=[go.Candlestick(x=dr['Date'],
                                          open=dr['Open'], high=dr['High'],
                                          low=dr['Low'], close=dr['Close'])
@@ -38,6 +41,8 @@ def get_data(stock_name,time):
             showarrow=False, xanchor='left', text='Nami Period Begins')]
     )
     fig.show()
+    #Save graph to picture(.png)
+    fig.write_image("graph.png")
 
 #入力したdatetime formatをチェック
 def check_date_input(time):
@@ -76,9 +81,12 @@ if __name__ == "__main__":
         check_date_input(args[2])
         get_data(args[1], args[2])
         logger.info('No problem with parameter!')
-        print('Stock name is {d[1]},checked from {d[2]}'.format(d=args))
+        logger.info('Stock name is {d[1]},checked from {d[2]}'.format(d=args))
+
     except IndexError as ie:
         logger.error(ie)
+        print('You need two parameter to run!')
+
 
 
 
