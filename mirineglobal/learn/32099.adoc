@@ -1,0 +1,157 @@
+== Webデータ取り込み、および格納
+:stem:
+
+===== 管理番号：32099
+===== 概要
+```
+下記のデータについて、特定サイトから定期的なデータ取得、およびサーバーへの格納をお願いしたい。
+また、過去データが取得可能なサイトについては、初期構築の際に過去データの取得もあわせてお願いしたい。
+
+・東証「決算発表予定日」
+・東証「有価証券の取引等の規制に関する内閣府令」
+・日証金「残高」
+・日証金「貸借銘柄一覧」
+・日証金「品貸料」
+```
+
+===== 簡略仕様
+
+##### 共通
+```
+ - データはSQL Serverに格納する。
+ - 対象データが取得できない場合、エラーを発生させ、引き続き運用で対応できるようする。
+ - GCPにてスケジュールによりクローリングを行い、抽出したデータは内部サーバーに転送する。
+ - 転送されたデータはSQL Serverに登録するのは内部サーバーの(新規)共通バッチが行う。
+```
+
+
+[plantuml]
+----
+
+
+skinparam ParticipantPadding 5
+skinparam BoxPadding 15
+
+hide footbox
+
+title (シーケンス図) [東証・日証金] Webデータ取り込み、および格納
+
+box "GCP" #LightBlue
+
+
+    control "クローラー" as crawler
+
+    database "MySQL" as db
+
+    boundary "Proxy" as proxy
+
+    activate crawler #DarkSalmon
+
+    activate proxy
+
+    crawler -> 東証or日証金 : クローリング
+
+    activate 東証or日証金
+
+    東証or日証金 -> crawler : ファイルダウンロード
+    deactivate 東証or日証金
+
+    crawler -> crawler : ファイルからデータ抽出
+
+    crawler --> db : 重複データチェックおよび履歴登録
+    activate db
+    crawler <-- db
+    deactivate db
+
+    deactivate proxy
+
+    create collections pubsub
+    crawler -> pubsub : データ転送 (publish)
+    deactivate crawler
+
+    pubsub -> 取込バッチ :  pull (subscribe)
+
+    activate 取込バッチ
+
+
+end box
+
+
+
+box "WEB"
+
+    participant 東証or日証金
+
+end box
+
+
+
+box "内部サーバー" #lightpink
+
+    participant 取込バッチ
+
+    database "SQL Server" as sql
+
+    取込バッチ -> sql : データ登録
+    deactivate 取込バッチ
+
+
+end box
+
+footer ※ 一つのクローラーに対するイメージです。
+
+----
+
+
+###### 1. 東証「決算発表予定日」
+```
+ - 取得先 : 「https://www.jpx.co.jp/listing/event-schedules/financial-announcement/index.html」よりクローリング
+ - 取得時間 : 毎営業日午前5時に更新されるため、毎営業日午前7時に取得
+ - 取得したファイルに含まれている全てのレコードに対し、「TICKER + PERIOD_END_MONTH」で過去レコードを検索
+   -> 過去レコードがなければ、RECORD_INDICATOR=1でレコード追加
+   -> 過去レコードに存在するものの、EXPECTED_ANNOUNCEMENT_DATEが変更無しの場合、無視
+   -> 過去レコードに存在して、EXPECTED_ANNOUNCEMENT_DATEに変更「あり」の場合、RECORD_INDICATOR+=1で、新たなレコードとして追加
+```
+
+
+###### 2. 東証「有価証券の取引等の規制に関する内閣府令」
+```
+ - 取得先 : 「https://www.jpx.co.jp/markets/public/short-selling/index.html」よりクローリング
+ - 取得時間 : 毎営業日16時を目途に更新されるため、毎営業日24時に取得
+ - 「公表日」、「計算年月日」、「銘柄コード」、「商号・名称・氏名」、「委託者・投資一任契約の相手方の商号・名称・氏名」、「信託財産・運用財産の名称」をKeyとしてInsert
+ - (一回限り、)バックナンバー取得。(過去分リカバリー)
+```
+
+###### 3. 日証金「残高」
+```
+ - 取得先 : 「http://www.taisyaku.jp/search_admin/comp/balance/zandaka{YYYYMMDD}.csv」
+ - 取得時間 : 毎営業日午前10時30分を目途に更新されるため、毎営業日午前に取得 -> 12時
+ - 「申込日」、「コード」をKeyとしてInsert
+```
+
+###### 4. 日証金「貸借銘柄一覧」
+```
+ - 取得先 : 「http://www.taisyaku.jp/sys-list/data/other.xlsx」
+ - 取得時間 : 毎営業日24時に取得(更新タイミング不明のため)
+ - 「C3セルの日付」、「コード」をKeyとしてInsert
+```
+
+###### 5. 日証金「品貸料」
+```
+ - 取得先 : 「http://www.taisyaku.jp/search_admin/comp/pcsl/shina{YYYYMMDD}.csv」
+ - 取得時間 : 毎営業日午前10時30分を目途に更新されるため、毎営業日午前に取得 -> 12時
+ - 「貸借申込日」、「コード」をKeyとしてInsert
+```
+
+=== 作業一覧
+===== 製造 ~ リリス
+```
+1. 東証「決算発表予定日」クローラーを新規作成 : 10人日
+2. 東証「有価証券の取引等の規制に関する内閣府令」クローラーを新規作成 : 10人日
+3. 日証金「残高」クローラーを新規作成 : 5人日
+4. 日証金「貸借銘柄一覧」クローラーを新規作成 : 5人日
+5. 日証金「品貸料」クローラーを新規作成 : 5人日
+6. SQL Server 取り込みバッチ新規作成 : 10人日
+
+- 予想工数：45人日
+```

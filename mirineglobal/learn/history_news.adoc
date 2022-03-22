@@ -1,0 +1,109 @@
+== リンクリストによるニュースクローラー
+:stem:
+
+===== 管理番号：-
+===== 概要
+```
+ニュースクローラーにリンクリストを投入・クローリングを行い、ニュース本文のみを抽出する機能を追加する。
+```
+
+===== 概略仕様
+```
+ - 既存ニュースクローラーにリカバリーモードとして追加する。
+ - ニュースリンクリストはニュース本文`Article`に対するリンクであり、csvファイル形式である。
+ - リカバリーモードの場合、`Section`、`Headline` は抽出しない。
+ - リカバリーモードの場合、ニュース統計処理行わない。
+ - リカバリーモードの場合、パージ処理を行わない。
+ - リカバリーモードの場合、リダイレクトが発生したら、リダイレクトを許容しないでエラーとする。
+```
+
+[plantuml]
+----
+
+skinparam ParticipantPadding 5
+skinparam BoxPadding 15
+
+hide footbox
+
+title (シーケンス図) リンクリストによるニュースクローラー
+
+actor user
+
+box "GCP" #LightBlue
+
+
+    control "クローラー" as crawler
+
+    database "MySQL" as db
+
+    boundary "Proxy" as proxy
+
+    user o->o crawler :
+
+    note over user
+        リング
+        リスト投入
+    end note
+
+
+    activate crawler #DarkSalmon
+
+    activate proxy
+
+    crawler -> ニュースサイト : クローリング
+
+    activate ニュースサイト
+
+    ニュースサイト -> crawler : ニュース本文抽出
+    deactivate ニュースサイト
+
+    crawler --> db : クローリング履歴等格納
+
+    activate db
+    deactivate db
+
+    deactivate proxy
+
+    crawler -> pipeline : ニュース本文転送
+
+    activate pipeline
+    deactivate pipeline
+
+end box
+
+box "WEB"
+
+    participant ニュースサイト
+
+end box
+
+
+
+box "内部サーバー" #lightpink
+
+    participant pipeline
+
+
+end box
+
+
+deactivate crawler
+
+----
+
+=== 作業一覧
+===== 製造 ~ リリース
+```
+1. 既存、ニュースクローラーにリカバリーモードとして機能を追加する。
+2. テスト、リリース
+
+- 予想工数：8人日
+```
+===== 実施
+```
+1. 既存ニュースクローラーとの衝突を回避するため、一時停止する。
+2. 提供されたリックリストファイルをプログラムに投入・実施を行う。
+3. 失敗したURLリスト(404, 3XX系)を抽出する。
+
+- 予想工数：2人日
+```
