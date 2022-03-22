@@ -80,6 +80,12 @@ if __name__ == "__main__":
         #print(type(args))----->argsのタイプを確認します
         check_date_input(args[2])
         get_data(args[1], args[2])
+        
+        #自動的に実行するため時間がlogファイルに保存します。
+        run_time=datetime.now()
+        string_run_time=run_time.strftime("%m/%d/%Y, %H:%M:%S")
+        logger.info('Program run at:{} '.format(string_run_time))
+
         logger.info('No problem with parameter!')
         logger.info('Stock name is {d[1]},checked from {d[2]}'.format(d=args))
 
