@@ -19,7 +19,7 @@
 
 ![自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.002.png)
 
-1. Elas.pyファイルで使用するライブラリ：
+## 2. Elas.pyファイルで使用するライブラリ：
 
 ![オレンジ色の画面のスクリーンショット
 
@@ -35,20 +35,16 @@ Json: jsonファイルを操作するため。
 
 Datetime: 日付の管理ため。
 
-1. コーディングの手順：
+## 3. コーディングの手順：
 - ElasticSearchサーバーの活動を確認します。
 
-![テキスト
-
-自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.004.png)
+![自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.004.png)
 
 「elasticsearch is running」->サーバーが実行しています。
 
 サーバーを実行した後でサーバーの情報を確認できます。
 
-![テキスト
-
-自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.005.png)
+![自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.005.png)
 
 - クローリングしたデータがcsvファイルとして取得するためstock1.pyというファイルを実行します。
 
@@ -70,17 +66,13 @@ curl -XGET "http://localhost:9200/\_cat/indices"
 
 - Stockの情報を確認できます。
 
-![テキスト
+![自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.009.png)
 
-自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.009.png)
-
-1. crontabの説明：
+## 4. crontabの説明：
 
 “crontabは定期的にジョブを実行するようスケジュールするcronを設定するコマンドです。”
 
-![テキスト
-
-自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.010.png)
+![自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.010.png)
 
 Crontabのファイルで
 
