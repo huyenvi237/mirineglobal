@@ -21,9 +21,7 @@
 
 ## 2. Elas.pyファイルで使用するライブラリ：
 
-![オレンジ色の画面のスクリーンショット
-
-低い精度で自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.003.png)
+![低い精度で自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.003.png)
 
 Elasticsearch: elasticsearch	サーバーを使うため。
 
