@@ -23,15 +23,15 @@
 
 ![低い精度で自動的に生成された説明](Aspose.Words.b4e956b6-7cf2-47cf-b817-7654df7ff04e.003.png)
 
-Elasticsearch: elasticsearch	サーバーを使うため。
+- Elasticsearch: elasticsearch	サーバーを使うため。
 
-Csv: csvファイルを読むため。
+- Csv: csvファイルを読むため。
 
-Ssl: SSL Certificateを処理するため。
+- Ssl: SSL Certificateを処理するため。
 
-Json: jsonファイルを操作するため。
+- Json: jsonファイルを操作するため。
 
-Datetime: 日付の管理ため。
+- Datetime: 日付の管理ため。
 
 ## 3. コーディングの手順：
 - ElasticSearchサーバーの活動を確認します。
