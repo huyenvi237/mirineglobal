@@ -73,7 +73,7 @@ with open("new2.csv", "w") as f:
     writer.writerow(["No","Date","Titles","Contents"])
     for row in range(len(title)):
         writer.writerow([row+1, date, title[row], content[row]])
-logger.info('Created a CSV file')
+logger.info('Created a CSV file')   
 
 
 
