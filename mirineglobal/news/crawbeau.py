@@ -62,7 +62,8 @@ for link in craw_source:
     print()
     print('contents is {}'.format(content))"""
 
-    if link is not craw_source[0]:  #Sleep time　セットしないとウェブからblockさせられるかもしれない。
+    leng_list=len(craw_source)
+    if link is not craw_source[leng_list]:  #Sleep time　セットしないとウェブからblockさせられるかもしれない。
         time.sleep(180)
 logger.info('Collect all data!')
 
