@@ -1,0 +1,107 @@
+[upperroman]
+. [.underline]#概要：#
+
+[arabic]
+. [.underline]#ドキュメントの目的：#
+
+* プログラムで直したコードと使用する関数、追加ライブラリの目的が分かるようになる。
+* コーディングの手順またを入力・出力イメージ明確化する。
+
+[arabic, start=2]
+. [.underline]#概略仕様:#
+
+* 直した部分の説明。
+* 追加ライブラリ。
+* コーディングの手順。
+* Crontabの説明。
+
+[upperroman, start=2]
+. [.underline]#作業一覧：#
+
+[arabic]
+. [.underline]#直した部分の説明：#
+
+* クローリングした会社のDate
+、株価、VolumeをElasticSearchにデータを保存するため、elas.pyという新しいファイルを作成しました。
+* Crontabを実行するとデータを自動的に保存するから時間がlogファイルに書き残すためstock1.pyのファイルでコードを追加します。
+
+image:media/image1.png[テキスト
+自動的に生成された説明,width=588,height=82]
+
+[arabic, start=2]
+. [.underline]#Elas.pyファイルで使用するライブラリ：#
+
+image:media/image2.png[オレンジ色の画面のスクリーンショット
+低い精度で自動的に生成された説明,width=513,height=66]
+
+Elasticsearch: elasticsearch サーバーを使うため。
+
+Csv: csvファイルを読むため。
+
+Ssl: SSL Certificateを処理するため。
+
+Json: jsonファイルを操作するため。
+
+Datetime: 日付の管理ため。
+
+[arabic, start=3]
+. [.underline]#コーディングの手順：#
+
+* ElasticSearchサーバーの活動を確認します。
+
+image:media/image3.png[テキスト
+自動的に生成された説明,width=572,height=73]
+
+「elasticsearch is running」->サーバーが実行しています。
+
+サーバーを実行した後でサーバーの情報を確認できます。
+
+image:media/image4.png[テキスト
+自動的に生成された説明,width=566,height=183]
+
+* クローリングしたデータがcsvファイルとして取得するためstock1.pyというファイルを実行します。
+
+____
+python3 stock1.py SBI 2022-02-15
+____
+
+image:media/image5.png[image,width=551,height=34]
+
+* Elas.pyファイルを実行します。
+
+____
+python3 elas.py
+____
+
+image:media/image6.png[image,width=612,height=33]
+
+* Elasticsearchのサーバーでインデックスをチェックします。
+
+____
+curl -XGET "http://localhost:9200/_cat/indices"
+____
+
+image:media/image7.png[image,width=629,height=62]
+
+* Stockの情報を確認できます。
+
+image:media/image8.png[テキスト
+自動的に生成された説明,width=566,height=78]
+
+[arabic, start=4]
+. [.underline]#crontabの説明：#
+
+“crontabは定期的にジョブを実行するようスケジュールするcronを設定するコマンドです。”
+
+image:media/image9.png[テキスト
+自動的に生成された説明,width=566,height=337]
+
+Crontabのファイルで
+
+「0 10 * * * cd /mnt/c/Users/mg-sa/Desktop/mirineglobal && python3
+stock1.py SBI 2022-01-30
+
+2 10 * * * cd /mnt/c/Users/mg-sa/Desktop/mirineglobal && python3
+elas.py」という命令を書きました。
+
+意味は：毎日10時にmirineglobalのフォルダに移動して、stock1.pyのファイルを実行します。また2分後でelas.pyのファイルも実行します。
