@@ -42,29 +42,35 @@ def getMain_page(li):
     for links in li:
         news_page = requests.get(links)
         soup1 = BeautifulSoup(news_page.content, "html.parser")
-        page_info = soup1.find_all("div", {"class": "sc-fXUGxx lawZbQ"})
+        page_info = soup1.find_all("div", {"class": "sc-muxYx kNLljN"})
         for link in page_info:
             list_link.append(link.find('a').attrs["href"])
     return list_link
 
 craw_source=getMain_page(links)
+#print(craw_source)
+for c in craw_source:
+    if "articles" not in c:
+        craw_source.remove(c)
 title=[]
 content=[]
+
+print(craw_source)
 for link in craw_source:
     main_news = requests.get(link)
     soup2 = BeautifulSoup(main_news.content, "html.parser")
-    title.append(soup2.find("h1", {"class": "sc-eInJlc jCuuwn"}).text)
-    body = soup2.find_all("div", {"class": "sc-ipZHIp ieFwHi"})
-    y = body[0]
-    content.append(y.findChild("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"}).text)
-    #クローリング情報を確認
-    """print('title is {}'.format(title))
-    print()
-    print('contents is {}'.format(content))"""
-
-    leng_list=len(craw_source)
-    if link is not craw_source[leng_list]:  #Sleep time　セットしないとウェブからblockさせられるかもしれない。
-        time.sleep(180)
+    if link.startswith('https://news.yahoo.co.jp/byline/'):
+        title.append(soup2.find("h1", {"class": "sc-htaOgQ gNzwpV"}).text)
+        body = soup2.find_all("p", {"class": "nobr"})
+        for y in body:
+            content.append(y.text)
+    else:
+        title.append(soup2.find("h1", {"class": "sc-eInJlc jCuuwn"}).text)
+        body = soup2.find_all("div", {"class": "sc-ipZHIp ieFwHi"})
+        y = body[0]
+        content.append(y.findChild("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"}).text)
+        # Sleep time　セットしないとウェブからblockさせられるかもしれない。
+        time.sleep(10)
 logger.info('Collect all data!')
 
 #Create CSV File
@@ -74,7 +80,8 @@ with open("new2.csv", "w") as f:
     writer.writerow(["No","Date","Titles","Contents"])
     for row in range(len(title)):
         writer.writerow([row+1, date, title[row], content[row]])
-logger.info('Created a CSV file')   
+logger.info('Created a CSV file')
+logger.info('--------------------------')
 
 
 
