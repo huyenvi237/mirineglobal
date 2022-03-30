@@ -1,0 +1,14 @@
+@charset "UTF-8";
+body{
+    font-family: 'Noto Serif JP', serif;
+}
+h1{
+    text-align: center;
+}
+h2{
+    margin: 10px 0px;
+}
+table, tr, td{
+    border: 1px solid black;
+    margin: 20px 100px;
+}
