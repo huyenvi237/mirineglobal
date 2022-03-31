@@ -5,13 +5,17 @@ from time import sleep
 import csv
 import pandas as pd
 
+#クローリングURL
 URL = 'https://news.yahoo.co.jp/topics/top-picks?page='
 
+#必須なリスト作る
 titles=[]
 links=[]
 tit=[]
 li=[]
-for page in range(1, 10):
+
+#Page1-3をクローリングする
+for page in range(1, 3):
     req = requests.get(URL + str(page))
     soup = bs(req.text, 'html.parser')
 
@@ -20,16 +24,19 @@ for page in range(1, 10):
 
     sleep(randint(4, 10))
 
+#Titles, Linksのリストを作る
 for l in li:
     links.append(l.attrs["href"])
 for t in tit:
     titles.append(t.text)
 
+#CSVファイルを作成
 with open("new2.csv", "w", encoding='UTF-8') as f:
     writer = csv.writer(f)
     writer.writerow(["Titles","Links"])
     writer.writerows(zip(titles, links))
-
+    
+#Contentを取得関数
 def getMain_page(li):
     list_link=[]
     for links in li:
@@ -56,6 +63,8 @@ for link in craw_source:
     y = body[0]
     content.append(y.findChild("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"}).text)
     sleep(randint(4, 10))
+    
+#CSVファイルにcontentを追加
 dt = pd.read_csv('new2.csv')
-dt['Contents'] = content
+dt['Contents'] = pd.Series(content)
 dt.to_csv('file.csv')
