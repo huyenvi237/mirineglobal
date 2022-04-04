@@ -3,16 +3,39 @@ from bs4 import BeautifulSoup as bs
 from random import randint
 from time import sleep
 import csv
+import logging
+from datetime import datetime
+import re
 
 ### 必ずsleep timeをセットする。ページからblock可能性が高いです。
 ### random ライブラリを使用すると時間が調整しやすい。
-URL = 'https://news.yahoo.co.jp/topics/top-picks?page='
+URL = 'https://news.yahoo.co.jp/topics/it?page='
 
 #使用リスク
 titles=[]   #title list
 links=[]    #link list
 index=[]    #削除したelementsのインデックスを保存リスク
 content=[]  #content list
+
+#Logging Setting
+logger = logging.getLogger('Output_logging_file')
+file_logger = logging.FileHandler('ouput_logging_newsfile.log')
+new_format = '[%(asctime)s] - [%(levelname)s] - %(message)s'
+file_logger_format = logging.Formatter(new_format)
+
+# ファイルでもコンソールでもデータを入力するため Stream Handlerを使います
+file_logger.setFormatter(file_logger_format)
+logger.addHandler(file_logger)
+logger.setLevel(logging.INFO)
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+logging.getLogger('Output_logging_file').addHandler(console)
+
+logger.info('Collecting IT news from Yahoo website')
+run_time=datetime.now()
+string_run_time = run_time.strftime("%m/%d/%Y, %H:%M:%S")
+logger.info('Program run at:{} '.format(string_run_time))
 
 for page in range(1, 2):
     req = requests.get(URL + str(page))
@@ -40,7 +63,7 @@ def getMain_page(li):
     return list_link
 
 craw_source=getMain_page(links)
-#print(craw_source)
+logger.info("Original links: {}".format(len(craw_source)))
 
 #アクセスできるリングを調整する
 for c in craw_source:
@@ -53,24 +76,47 @@ for c in craw_source:
             craw_source.remove(c)
 
 #リスクの保存ができるかどうか確認する
-print(len(index))      
-print(len(titles))
+logger.info("Index of not usual links: {}".format(len(index)))
+logger.info("Titles before take away not necessary title: {}".format(len(titles)))
 
 #Titles listを調整する
 for i in sorted(index, reverse=True):
     del  titles[i]
 
 #リスクの保存ができるかどうか確認する
-print(len(titles))
-print(len(craw_source))
+logger.info("Titles after edit: {}".format(len(titles)))
+logger.info("Links after edit: {}".format(len(craw_source)))
 
+count=1
 #Contentsを取得する
 for link in craw_source:
     main_news = requests.get(link)
     soup2 = bs(main_news.content, "html.parser")
-    body = soup2.find_all("div", {"class": "sc-ipZHIp ieFwHi"})
-    y = body[0]
-    content.append(y.findChild("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"}).text)
+    #body = soup2.find_all("div", {"class": "sc-ipZHIp ieFwHi"})
+    #y = body[0]
+    try:
+        body = soup2.find("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"})
+        tags_to_delete = body.find_all(['rp', 'rt', 'a'])
+        for tag in tags_to_delete:
+            tag.decompose()
+        #読めるように文字の上に読み方が書いておく時など削除したいと使う
+        """
+        body = body.get_text()
+        body = body.replace('\r', '').replace('\n', '').replace('\u3000', '')
+        body = body.replace('「', '').replace('」', '\n')
+        body = re.sub('([！。])', r'\1\n', body)
+        body.replace('\n\n', '\n')
+        content = body.splitlines()"""
+
+        for b in body:
+            content.append(b.text)
+        logger.info("Link {} ok".format(count))
+        count += 1
+    except IndexError as ie:
+        logger.error("Link {} get {}".format(count,ie))
+        logger.error("Link error: {}".format(link))
+        count += 1
+
     sleep(randint(4, 10))
 
 #CSVファイルを作成
@@ -78,4 +124,7 @@ with open("file.csv", "w", encoding='UTF-8') as f:
     writer = csv.writer(f)
     writer.writerow(["Titles","Links","Contents"])
     writer.writerows(zip(titles, links, content))
+
+logger.info("Finished!")
+logger.info("-----------------------------------")
 
