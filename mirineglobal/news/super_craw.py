@@ -45,8 +45,6 @@ for page in range(1, 2):
 
     for l in li:
         links.append(l.attrs["href"])
-    """for t in tit:
-        titles.append(t.text)"""
     sleep(randint(4, 10))
 
 #ページによって関数を使用するかどうか決める
@@ -82,7 +80,7 @@ logger.info("Links after edit: {}".format(len(craw_source)))
 ctx = ssl.create_default_context()
 ctx.load_verify_locations("./http_ca.crt")
 es = Elasticsearch("http://localhost:9200")
-index = "daily-news-stocks"
+index = "it-yahoo-news-stocks"
 
 count=1     #Check link error
 line = 1    #Create index in elastic server
@@ -90,20 +88,16 @@ line = 1    #Create index in elastic server
 for link in craw_source:
     main_news = requests.get(link)
     soup2 = bs(main_news.content)
-
     try:
         title = soup2.find('h1', class_ = 'sc-eInJlc jCuuwn').text
         main_text = soup2.find("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"})
-
         #Find tag <a> and delete
-        tags_delete = main_text.find_all('a')       #ページコードによって<ruby> tag, <a> tag, <h{1-3}> tagなど
+        tags_delete = main_text.find_all('a')       #ページコードによって<ruby> tag (rp,rt,rb), <a> tag, <h{1-3}> tagなど
         for t in tags_delete:                       #全部削除する場合もあります
             t.decompose()
-            
-        #Clean text
-        main_text.text.replace('\n\n\n\n', '')
-        main_text.text.replace(' ', '')
-        content= main_text.text
+        #After remove tag by using decompose(), they'll give an extra space that can't remove
+        #by simple way 'replace'---> using stripped_string to convert web to normal string
+        content= ''.join(main_text.stripped_strings)    #空白を削除するため
         body = {
             "title": title,
             "link": link,               #Format data for elasticsearch
