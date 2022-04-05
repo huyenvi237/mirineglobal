@@ -38,6 +38,7 @@ logger.info('Program run at:{} '.format(string_run_time))
 
 for page in range(1, 2):
     req = requests.get(URL + str(page))
+    req.raise_for_status()
     soup = bs(req.text, 'html.parser')
 
     #tit=soup.find_all('div', {'class': 'newsFeed_item_title'})
@@ -52,6 +53,7 @@ def getMain_page(li):
     list_link=[]
     for links in li:
         news_page = requests.get(links)
+        news_page.raise_for_status()
         soup1 = bs(news_page.content, "html.parser")
         page_info = soup1.find_all("div", {"class": "sc-muxYx kNLljN"})
         for link in page_info:
@@ -87,6 +89,7 @@ line = 1    #Create index in elastic server
 #Contentsを取得する
 for link in craw_source:
     main_news = requests.get(link)
+    main_news.raise_for_status()    #データのダウンロードがうまくかどうかチェック
     soup2 = bs(main_news.content)
     try:
         title = soup2.find('h1', class_ = 'sc-eInJlc jCuuwn').text
