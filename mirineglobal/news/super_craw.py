@@ -2,20 +2,19 @@ import requests
 from bs4 import BeautifulSoup as bs
 from random import randint
 from time import sleep
-import csv
 import logging
 from datetime import datetime
-import re
+from elasticsearch import Elasticsearch
+import ssl
 
 ### 必ずsleep timeをセットする。ページからblock可能性が高いです。
 ### random ライブラリを使用すると時間が調整しやすい。
+### elastic dockerを実行したらプログラムを実行
 URL = 'https://news.yahoo.co.jp/topics/it?page='
 
 #使用リスク
-titles=[]   #title list
 links=[]    #link list
 index=[]    #削除したelementsのインデックスを保存リスク
-content=[]  #content list
 
 #Logging Setting
 logger = logging.getLogger('Output_logging_file')
@@ -41,13 +40,13 @@ for page in range(1, 2):
     req = requests.get(URL + str(page))
     soup = bs(req.text, 'html.parser')
 
-    tit=soup.find_all('div', {'class': 'newsFeed_item_title'})
+    #tit=soup.find_all('div', {'class': 'newsFeed_item_title'})
     li=soup.find_all('a', {'class': 'newsFeed_item_link'})
 
     for l in li:
         links.append(l.attrs["href"])
-    for t in tit:
-        titles.append(t.text)
+    """for t in tit:
+        titles.append(t.text)"""
     sleep(randint(4, 10))
 
 #ページによって関数を使用するかどうか決める
@@ -77,54 +76,46 @@ for c in craw_source:
 
 #リスクの保存ができるかどうか確認する
 logger.info("Index of not usual links: {}".format(len(index)))
-logger.info("Titles before take away not necessary title: {}".format(len(titles)))
-
-#Titles listを調整する
-for i in sorted(index, reverse=True):
-    del  titles[i]
-
-#リスクの保存ができるかどうか確認する
-logger.info("Titles after edit: {}".format(len(titles)))
 logger.info("Links after edit: {}".format(len(craw_source)))
 
-count=1
+#Elasticサーバーの設定
+ctx = ssl.create_default_context()
+ctx.load_verify_locations("./http_ca.crt")
+es = Elasticsearch("http://localhost:9200")
+index = "daily-news-stocks"
+
+count=1     #Check link error
+line = 1    #Create index in elastic server
 #Contentsを取得する
 for link in craw_source:
     main_news = requests.get(link)
-    soup2 = bs(main_news.content, "html.parser")
-    #body = soup2.find_all("div", {"class": "sc-ipZHIp ieFwHi"})
-    #y = body[0]
-    try:
-        body = soup2.find("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"})
-        tags_to_delete = body.find_all(['rp', 'rt', 'a'])
-        for tag in tags_to_delete:
-            tag.decompose()
-        #読めるように文字の上に読み方が書いておく時など削除したいと使う
-        """
-        body = body.get_text()
-        body = body.replace('\r', '').replace('\n', '').replace('\u3000', '')
-        body = body.replace('「', '').replace('」', '\n')
-        body = re.sub('([！。])', r'\1\n', body)
-        body.replace('\n\n', '\n')
-        content = body.splitlines()"""
+    soup2 = bs(main_news.content)
 
-        for b in body:
-            content.append(b.text)
+    try:
+        title = soup2.find('h1', class_ = 'sc-eInJlc jCuuwn').text
+        main_text = soup2.find("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"})
+
+        #Find tag <a> and delete
+        tags_delete = main_text.find_all('a')       #ページコードによって<ruby> tag, <a> tag, <h{1-3}> tagなど
+        for t in tags_delete:                       #全部削除する場合もあります
+            t.decompose()
+            
+        #Clean text
+        main_text.text.replace('\n\n\n\n', '')
+        main_text.text.replace(' ', '')
+        content= main_text.text
+        body = {
+            "title": title,
+            "link": link,               #Format data for elasticsearch
+            "content": content
+        }
+        es.index(index=index, id=line, body=body)
+        line += 1
         logger.info("Link {} ok".format(count))
         count += 1
     except IndexError as ie:
         logger.error("Link {} get {}".format(count,ie))
         logger.error("Link error: {}".format(link))
         count += 1
-
     sleep(randint(4, 10))
-
-#CSVファイルを作成
-with open("file.csv", "w", encoding='UTF-8') as f:
-    writer = csv.writer(f)
-    writer.writerow(["Titles","Links","Contents"])
-    writer.writerows(zip(titles, links, content))
-
-logger.info("Finished!")
-logger.info("-----------------------------------")
 
