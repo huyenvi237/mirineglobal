@@ -38,10 +38,8 @@ logger.info('Program run at:{} '.format(string_run_time))
 
 for page in range(1, 2):
     req = requests.get(URL + str(page))
-    req.raise_for_status()
     soup = bs(req.text, 'html.parser')
 
-    #tit=soup.find_all('div', {'class': 'newsFeed_item_title'})
     li=soup.find_all('a', {'class': 'newsFeed_item_link'})
 
     for l in li:
@@ -53,7 +51,6 @@ def getMain_page(li):
     list_link=[]
     for links in li:
         news_page = requests.get(links)
-        news_page.raise_for_status()
         soup1 = bs(news_page.content, "html.parser")
         page_info = soup1.find_all("div", {"class": "sc-muxYx kNLljN"})
         for link in page_info:
@@ -89,7 +86,6 @@ line = 1    #Create index in elastic server
 #Contentsを取得する
 for link in craw_source:
     main_news = requests.get(link)
-    main_news.raise_for_status()    #データのダウンロードがうまくかどうかチェック
     soup2 = bs(main_news.content)
     try:
         title = soup2.find('h1', class_ = 'sc-eInJlc jCuuwn').text
@@ -101,12 +97,14 @@ for link in craw_source:
         #After remove tag by using decompose(), they'll give an extra space that can't remove
         #by simple way 'replace'---> using stripped_string to convert web to normal string
         content= ''.join(main_text.stripped_strings)    #空白を削除するため
+        new_date = run_time.strftime('%m/%d')
         body = {
+            "date": new_date,
             "title": title,
-            "link": link,               #Format data for elasticsearch
+            "link": link,
             "content": content
         }
-        es.index(index=index, id=line, body=body)
+        es.index(index=index, id=line, body=body)   #Format data for elasticsearch
         line += 1
         logger.info("Link {} ok".format(count))
         count += 1
@@ -115,4 +113,4 @@ for link in craw_source:
         logger.error("Link error: {}".format(link))
         count += 1
     sleep(randint(4, 10))
-
+logger.info('Finished!-------------------------')
