@@ -4,6 +4,8 @@ from random import randint
 from time import sleep
 import logging
 from datetime import datetime
+import re
+from urllib import request
 from elasticsearch import Elasticsearch
 import ssl
 
@@ -87,9 +89,9 @@ count=1     #Check link error
 line = 1    #Create index in elastic server
 #Contentsを取得する
 for link in craw_source:
-    main_news = requests.get(link)
-    main_news.raise_for_status()
-    soup2 = bs(main_news.content)
+    main_news = request.urlopen(link)
+    soup2 = bs(main_news)
+    main_news.close()
     try:
         title = soup2.find('h1', class_ = 'sc-eInJlc jCuuwn').text
         main_text = soup2.find("p", {"class": "sc-giadOv loZBCE yjSlinkDirectlink highLightSearchTarget"})
@@ -97,9 +99,14 @@ for link in craw_source:
         tags_delete = main_text.find_all('a')       #ページコードによって<ruby> tag (rp,rt,rb), <a> tag, <h{1-3}> tagなど
         for t in tags_delete:                       #全部削除する場合もあります
             t.decompose()
-        #After remove tag by using decompose(), they'll give an extra space that can't remove
-        #by simple way 'replace'---> using stripped_string to convert web to normal string
-        content= ''.join(main_text.stripped_strings)    #空白を削除するため
+        #After remove tag by using decompose(), you need to remove space or symbol to convert web to normal string
+        main_text = main_text.get_text()
+        main_text = main_text.replace('\r', '').replace('\n', '').replace('\u3000', '')
+        main_text = main_text.replace('「', '').replace('」', '\n')
+        main_text = re.sub('([！。])', r'\1\n', main_text)
+        main_text.replace('\n\n', '\n')
+        content = main_text.splitlines()
+        
         new_date = run_time.strftime('%m/%d')
         body = {
             "date": new_date,
