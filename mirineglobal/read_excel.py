@@ -48,12 +48,6 @@ def infor():
     return choice
 
 if __name__ == '__main__':
-    # for d in df['% Change']:
-    #     # print(d.replace('%','0'))
-    #     if float(d.replace('%', '0')) <= -10:
-    #         print(df[df['% Change'] == d])
-    #     else:
-    #         continue
     while(True):
         choice = infor()
         if choice == 1:
