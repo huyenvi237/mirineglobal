@@ -4,23 +4,23 @@ from random import randint
 from time import sleep
 import logging
 from datetime import datetime
-import re
-from urllib import request
 from elasticsearch import Elasticsearch
 import ssl
+import re
+from urllib import request
 
 ### 必ずsleep timeをセットする。ページからblock可能性が高いです。
 ### random ライブラリを使用すると時間が調整しやすい。
 ### elastic dockerを実行したらプログラムを実行
-URL = 'https://news.yahoo.co.jp/topics/it?page='
 
-#使用リスク
-links=[]    #link list
-index=[]    #削除したelementsのインデックスを保存リスク
+#Terminalから情報を読みます
+web_page = input("読みたいニューズ（IT/entertainment/domestic/world/business）: ").lower()
+#入力したニューズの種類によってURLをセットする
+URL = 'https://news.yahoo.co.jp/topics/{}?page='.format(web_page)
 
 #Logging Setting
 logger = logging.getLogger('Output_logging_file')
-file_logger = logging.FileHandler('ouput_logging_newsfile.log')
+file_logger = logging.FileHandler('ouput_logging_{} newsfile.log'.format(web_page))
 new_format = '[%(asctime)s] - [%(levelname)s] - %(message)s'
 file_logger_format = logging.Formatter(new_format)
 
@@ -33,11 +33,15 @@ console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 logging.getLogger('Output_logging_file').addHandler(console)
 
-logger.info('Collecting IT news from Yahoo website')
+logger.info('Collecting {} news from Yahoo website'.format(web_page))
 run_time=datetime.now()
 string_run_time = run_time.strftime("%m/%d/%Y, %H:%M:%S")
 logger.info('Program run at:{} '.format(string_run_time))
 
+
+#使用リスク
+links=[]    #link list
+index=[]    #削除したelementsのインデックスを保存リスク
 for page in range(1, 2):
     req = requests.get(URL + str(page))
     req.raise_for_status()
@@ -83,7 +87,7 @@ logger.info("Links after edit: {}".format(len(craw_source)))
 ctx = ssl.create_default_context()
 ctx.load_verify_locations("./http_ca.crt")
 es = Elasticsearch("http://localhost:9200")
-index = "it-yahoo-news-stocks"
+index = "{}-yahoo-news-stocks{}".format(web_page,run_time.strftime('%d'))
 
 count=1     #Check link error
 line = 1    #Create index in elastic server
@@ -99,20 +103,22 @@ for link in craw_source:
         tags_delete = main_text.find_all('a')       #ページコードによって<ruby> tag (rp,rt,rb), <a> tag, <h{1-3}> tagなど
         for t in tags_delete:                       #全部削除する場合もあります
             t.decompose()
-        #After remove tag by using decompose(), you need to remove space or symbol to convert web to normal string
+        '''
+        content= ''.join(main_text.stripped_strings)
+        '''
+        # After remove tag by using decompose(), need to convert web to normal string
         main_text = main_text.get_text()
         main_text = main_text.replace('\r', '').replace('\n', '').replace('\u3000', '')
         main_text = main_text.replace('「', '').replace('」', '\n')
         main_text = re.sub('([！。])', r'\1\n', main_text)
-        main_text.replace('\n\n', '\n')
+        main_text = main_text.replace('\n\n', '\n')
         content = main_text.splitlines()
-        
         new_date = run_time.strftime('%m/%d')
         body = {
             "date": new_date,
             "title": title,
             "link": link,
-            "content": content
+            "content": main_text
         }
         es.index(index=index, id=line, body=body)   #Format data for elasticsearch
         line += 1
