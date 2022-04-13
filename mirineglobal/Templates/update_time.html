@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Time</title>
+</head>
+<body>
+    <h3>Update time here
+        <span id="CurrentTime"></span>
+    </h3>
+    <h3>Time ago here
+        <span id="TimeAgo"></span>
+    </h3>
+    <script>
+        GetTime();
+        function GetTime(){
+          var CurrentTime = new Date()
+          var hour = CurrentTime.getHours()
+          var minute = CurrentTime.getMinutes()
+          var second = CurrentTime.getSeconds()
+
+          if(minute < 10){
+            minute = "0" + minute
+          }
+
+          if(second < 10){
+            second = "0" + second
+          }
+
+          var GetCurrentTime = CurrentTime.toLocaleDateString() +" "+ hour + ":" + minute;
+
+          if(hour > 11){
+            GetCurrentTime += "p.m."
+          }else{
+            GetCurrentTime += "a.m."
+          }
+
+          document.getElementById("CurrentTime").innerHTML = GetCurrentTime;
+          //alert(`Loading started ${performance.now()}ms ago`);
+          setTimeout(GetTime,1000)
+        }
+        TimeAgo();
+        function TimeAgo() {
+            var timeago = ((performance.now()/1000)/60).toFixed();
+            var getTimeAgo = timeago + "minute ago"
+            document.getElementById("TimeAgo").innerHTML = getTimeAgo
+            setInterval(TimeAgo,3000)
+        }
+
+    </script>
+</body>
+</html>
