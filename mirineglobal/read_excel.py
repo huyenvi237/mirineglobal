@@ -1,10 +1,10 @@
 import pandas as pd
 
+def pick_file(inp):
+    df = pd.read_excel('python-{}.xlsx'.format(inp))
+    return df
 
-file = pd.ExcelFile('python-losers.xlsx')
-df = pd.read_excel(file)
-
-def find():
+def find(df):
     logic = True
     while logic:
         n = 0
@@ -26,14 +26,18 @@ def find():
                 logic = False
                 print('Thank!')
 
-def printF():
+def printF(df):
     print('Running')
+    check = 0
     for d in df['% Change']:
         # print(d.replace('%','0'))
         if float(d.replace('%', '0')) <= -10:
             print(df[df['% Change'] == d])
+            check +=1
         else:
             continue
+    if check < 1:
+        print('-10%より下がった株価がない！')
 
 def infor():
     print("""
@@ -51,9 +55,13 @@ if __name__ == '__main__':
     while(True):
         choice = infor()
         if choice == 1:
-            printF()
+            df = pick_file('losers')
+            print(df)
+            printF(df)
         elif choice == 2:
-            find()
+            inp = input('Type of stock data: (losers/trending-tickers/gainers) ')
+            df = pick_file(inp)
+            find(df)
         elif choice == 3:
             print('Thank!')
             exit()
