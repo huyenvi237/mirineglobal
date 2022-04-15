@@ -91,7 +91,7 @@ if __name__ == '__main__':
             print(df)
             printF(df)
         elif choice == 2:
-            inp = input('Type of stock data: (losers/trending-tickers/gainers) ')
+            inp = input('Type of stock data: (losers/trending-tickers) ')
             df = pick_file(inp)
             print(df)
             find(df)
