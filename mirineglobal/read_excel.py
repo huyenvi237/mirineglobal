@@ -1,4 +1,7 @@
 import pandas as pd
+from datetime import datetime
+import yfinance as yf       #Yahoo financeを使いために
+import plotly.graph_objects as go
 
 def pick_file(inp):
     df = pd.read_excel('python-{}.xlsx'.format(inp))
@@ -39,13 +42,42 @@ def printF(df):
     if check < 1:
         print('-10%より下がった株価がない！')
 
+def get_data():
+    end_date = datetime.now()
+    stock_name = input('Enter stock symbol: ')
+    check_date = input('Check from when: ')
+    dt = yf.download(stock_name, start=check_date, end=end_date)
+    print(dt)
+    dt.to_csv('stock.csv')
+    dr = pd.read_csv('stock.csv')
+    fig = go.Figure(data=[go.Candlestick(x=dr['Date'],
+                                         open=dr['Open'], high=dr['High'],
+                                         low=dr['Low'], close=dr['Close'])
+                          ])
+
+    fig.update_layout(
+        title='CandleStick Chart',
+        yaxis_title='{} Stock'.format(stock_name),
+        shapes=[dict(
+            x0='2022-02-15', x1='2022-02-15', y0=0, y1=1, xref='x', yref='paper',
+            line_width=2)],
+        annotations=[dict(
+            x='2022-02-15', y=0.05, xref='x', yref='paper',
+            showarrow=False, xanchor='left', text='Nami Period Begins')]
+    )
+    fig.show()
+    #Save graph to picture(.png)
+    fig.write_image("graph.png")
+    # pass
+
 def infor():
     print("""
         -------------------------------------
         List of action:
             1.Print stock data which lost more than 10%
-            2.Find stock data 
-            3.Exit
+            2.Find stock data
+            3.Get data from web (If you can't find in stock data)
+            0.Exit
         -------------------------------------
         """)
     choice = int(input('Choose number: '))
@@ -61,8 +93,11 @@ if __name__ == '__main__':
         elif choice == 2:
             inp = input('Type of stock data: (losers/trending-tickers/gainers) ')
             df = pick_file(inp)
+            print(df)
             find(df)
         elif choice == 3:
+            get_data()
+        elif choice == 0:
             print('Thank!')
             exit()
 
