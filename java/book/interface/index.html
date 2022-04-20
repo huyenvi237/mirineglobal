@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/c49c83b5b5.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <title>Web-Project</title>
+    </head>
+
+    <body>
+        <header>
+            <div class="logo">
+                <img src="images/logo2.png" alt="logo2">
+            </div>
+
+            <div class="menu">
+                <li><a href="">Woman</a></li>
+                <li><a href="">Man</a></li>
+                <li><a href="">Children</a></li>
+                <li><a href="">Sale</a></li>
+                <li><a href="">Mask</a></li>
+                <li><a href="">Collections</a></li>
+                <li><a href="">Information</a></li>
+            </div>
+
+            <div class="others">
+                <li><input placeholder="Find" type="text"><i class="fas fa-search"></i></li>
+                <li><a class="fas fa-paw" href="" title="search icons"></a></li>
+                <li><a class="fas fa-user" href="" title="user icons"></a></li>
+                <li><a class="fas fa-shopping-bag" href="" title="shopping cart icons"></a></li>
+            </div>
+        </header>
+<!-----------Slider------------>
+
+        <section id="Slider">
+            <div class="aspect-ratio-169">
+                <img src="images/slide1.jpg" alt="Background Image1">
+                <img src="images/slide2.jpg" alt="Background Image2">
+                <img src="images/slide3.jpg" alt="Background Image3">
+                <img src="images/slide4.png" alt="Background Image4">
+            </div>
+
+            <div class="dot-container">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </section>
+<!---------App Container-------->
+
+        <section class="app-container">
+            <p>Install App</p>
+            <div class="app-google">
+                <img src="images/appstore.png"> 
+                <img src="images/googleplay.png"> 
+            </div>
+            <p>Receive information</p>
+            <input type="text" placeholder="Your Email...">
+        </section>
+
+<!-------footer------->
+        <footer>
+            <div class="footer-top">
+                <li><a href=""><img src="images/certificate.png" alt=""></a></li>
+                <li><a href="">Contact</a></li>
+                <li><a href="">Apply</a></li>
+                <li><a href="">Introduce</a></li>
+                <li>
+                    <a href=""><i class="fa-brands fa-facebook"></i></a>
+                    <a href=""><i class="fa-brands fa-twitter"></i></a>
+                    <a href=""><i class="fa-brands fa-youtube"></i></a>
+                </li>
+            </div>
+            <p>Mirineglobal-Training Program<br>
+               Komagome Eki <br>
+               <span>000-0000-0000</span>
+            </p>
+            <div class="footer-bottom">
+                🄫NGUYENTHIHUYENVI
+            </div>
+        </footer>
+<!---JS--->
+        <script>
+            const header = document.querySelector("header");
+            window.addEventListener("scroll", function(){
+                x = window.pageYOffset;
+                if (x>0){
+                    header.classList.add("sticky");
+                } else {
+                    header.classList.remove("sticky");
+                }
+            });
+            const imgPosition = document.querySelectorAll(".aspect-ratio-169 img");
+            // console.log(imgPosition);
+            const imgContainer = document.querySelector(".aspect-ratio-169");
+            const dotItem = document.querySelectorAll(".dot");
+            let index = 0;
+            let imgNum = imgPosition.length;
+
+            imgPosition.forEach(function(image,index){
+                image.style.left = index*100 + "%";
+                dotItem[index].addEventListener("click", function(){
+                    slider(index);
+                });
+            });
+
+            function imgSlide(){
+                index++;
+                if (index >= imgNum){
+                    index = 0;
+                }
+                slider(index);
+                
+            };
+
+            function slider(index){
+                imgContainer.style.left = "-" + index*100 + "%";
+                const dotActive = document.querySelector(".active");
+                dotActive.classList.remove("active");
+                dotItem[index].classList.add("active");
+            }
+
+            setInterval(imgSlide,5000);
+
+        </script>
+    </body>
+</html>
