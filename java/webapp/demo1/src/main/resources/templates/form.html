@@ -1,17 +1,40 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Contact</title>
-    <link rel="stylesheet" href="../static/formStyle.css">
+    <link rel="stylesheet" href="formStyle.css">
+    <script src="https://kit.fontawesome.com/c49c83b5b5.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Informaton</h1>
-    <form action="/file" method="post">
-        Name: <input type="text" width="50"> <br>
+    <div class="hero">
+        <div class="background"></div>
+        <form action="/file" method="post">
+            <div class="input-group">
+                <input type="text" id="name" name="name" required>
+                <label for="name"><i class="fa-solid fa-address-card"></i> Your Name</label>
+            </div>
+            <div class="input-group">
+                <input type="text" id="number" name="number" required>
+                <label for="number"><i class="fa-solid fa-phone"></i> Your Number</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="email" name="email" required>
+                <label for="email"><i class="fa-solid fa-envelope"></i> Your Email</label>
+            </div>
+            <div class="input-group">
+                <textarea id="message" rows="10" name="message" required></textarea>
+                <label for="message"><i class="fa-solid fa-message"></i> Your Message</label>
+            </div>
+            <div class="input-group" id="button">
+                <button id="but1" type="submit" value="Submit"><strong>SUBMIT</strong> <i class="fa-solid fa-paper-plane"></i></button>
+                <button id="but2" type="reset" value="Reset"><strong>RESET</strong> <i class="fa-solid fa-eraser"></i></button>
+            </div>
+        </form>
+    </div>
+        <!-- Name: <input type="text" width="50"> <br>
         Age: <input type="text" name="age" width="50"> <br>
         Sex:<input type="radio" name="sex" value="Male">Male
             <input type="radio" name="sex" value="Female"> Female <br>
@@ -24,7 +47,7 @@
         Account: <input type="text" name="account" width="50"><br>
         Password: <input type="password" name="pass" width="50"><br>
         <input type="submit" value="Submit">
-        <input type="reset" value="Reset">
+        <input type="reset" value="Reset"> -->
 
     </form>
 </body>
