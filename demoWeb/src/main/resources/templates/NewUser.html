@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>新規作成画面</title>
+  </head>
+  <body>
+    <h1>新規登録</h1>
+    <div><a th:href="@{/userlist}">一覧はこちら</a></div>
+    <form action="#" th:action="@{/new}" th:object="${User}" method="post">
+      <table>
+        <tr>
+          <th class="cell_title">ID</th>
+          <td><input type="text" th:field="*{Id}"></td>
+        </tr>
+        <tr>
+          <th class="cell_title">名前</th>
+          <td><input type="text" th:field="*{Name}"></td>
+        </tr>
+        <tr>
+          <th class="cell_title">メール</th>
+          <td><input type="text" th:field="*{Email}"></td>
+        </tr>
+      </table>
+      <button type="submit">新規</button>
+      <input type="button" value="終了" onclick="window.open('about:blank', '_self').close()">
+    </form>
+  </body>
+</html>
