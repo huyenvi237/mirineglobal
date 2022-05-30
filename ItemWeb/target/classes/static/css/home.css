@@ -1,0 +1,38 @@
+@charset "UTF-8";
+
+* {
+	margin: 0;
+	padding: 0;
+}
+h1 {
+	margin: 25px auto;
+}
+
+.head {
+	text-align: center;
+	vertical-align: center;
+	position:relative;
+}
+.item-table {
+	position: relative;
+	text-align: center;
+	vertical-align: center;
+}
+table {
+	border-collapse: collapse;
+	margin:0 auto;
+}
+
+thead {
+	color:green;
+}
+
+table,th,td {
+	border: 1px solid black;
+}
+
+th, td {
+	padding: 15px;
+	text-align: center;
+}
+

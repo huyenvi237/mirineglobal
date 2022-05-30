@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf">
+<head>
+	<meta charset="UTF-8">
+	<title>New Sales</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+	<div>
+		<h1>Edit Sale</h1>
+		
+		<form action="#" th:action="@{/update}" th:object="${item}" method="post">
+			<table>
+				<tr>
+					<td>ID:</td>
+					<td><input id="id" type="text" name="id" th:field="*{id}" readonly="readonly"></td>
+				</tr>
+				<tr>
+					<td>Item Name:</td>
+					<td><input id="item" type="text" name="Item" th:field="*{item}"></td>
+				</tr>
+				<tr>
+					<td>Quantity:</td>
+					<td><input id="quantity" type="text" name="quantity" th:field="*{quantity}"></td>
+				</tr>
+				<tr>
+					<td>Amount(USD):</td>
+					<td><input id="amount" type="text" name="amount" th:field="*{amount}"></td>
+				</tr>
+				<tr>
+					<td id="save"><button type="submit">Save</button></td>
+					<td><button type="reset">Cancel</button></td>
+				</tr>
+				
+			</table>
+		
+		
+		
+		
+			
+		</form>
+	</div>
+</body>
+</html>
